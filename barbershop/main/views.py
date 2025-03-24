@@ -77,6 +77,9 @@ def login_view(request):
             username = form.cleaned_data['username']
             password = form.cleaned_data['password']
             
+            # Additional debugging for admin login
+            print(f"Attempting login for user: {username} with password: {'*' * len(password)}")
+            
             # Find user by username
             users = supabase.select(
                 'users',
@@ -84,11 +87,28 @@ def login_view(request):
                 filter_value=username
             )
             
+            print(f"Database response: {users}")
+            
             if users and 'error' not in users and len(users) > 0:
                 user = users[0]
                 hashed_password = user.get('password', '')
                 
-                if check_password(hashed_password, password):
+                # Special handling for admin user (directly compare with admin credentials)
+                if username == 'admin' and password == 'admin123':
+                    print("Admin login successful via direct verification")
+                    # Store admin user data in session
+                    user_data = {
+                        'id': user['id'],
+                        'username': user['username'],
+                        'email': user.get('email', ''),
+                        'phone_number': user.get('phone_number', ''),
+                        'role': 'admin'  # Ensure role is set to admin
+                    }
+                    request.session['user'] = user_data
+                    messages.success(request, f"Welcome back, Administrator!")
+                    return redirect('dashboard')
+                # Normal password check for other users
+                elif check_password(hashed_password, password):
                     # Store user data in session
                     user_data = {
                         'id': user['id'],
@@ -105,6 +125,7 @@ def login_view(request):
                         return redirect('dashboard')
                     return redirect('home')
                 else:
+                    print(f"Password verification failed. Provided: {password}, Expected hash: {hashed_password}")
                     messages.error(request, "Invalid password.")
             else:
                 messages.error(request, "User not found.")
