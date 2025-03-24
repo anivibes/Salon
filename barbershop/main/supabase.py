@@ -85,59 +85,62 @@ class SupabaseClient:
 
     def custom_query(self, query):
         """Execute a custom SQL query using the admin key."""
-        # We'll need to execute the SQL statements one by one since there's no bulk execute function
+        # For simplicity and security reasons, we don't execute raw SQL via Supabase REST API
+        # Instead, we use the appropriate REST API methods for different operations
+        print(f"Custom query requested: {query}")
+        
+        # Split the query into individual statements
         statements = [stmt.strip() for stmt in query.split(';') if stmt.strip()]
         results = []
         
         for statement in statements:
+            # Skip empty statements
             if not statement:
                 continue
                 
-            # Determine if it's a SELECT query
-            is_select = statement.lower().startswith('select')
+            # Determine the type of statement
+            statement_lower = statement.lower()
             
-            if is_select:
-                # For SELECT queries, use the REST API
-                # Extract the table name from the query
-                # This is a simplified approach and might not work for complex queries
-                try:
-                    from_parts = statement.lower().split('from')
+            try:
+                if statement_lower.startswith('select'):
+                    # Handle SELECT statements
+                    # Extract the table name (simplified approach)
+                    from_parts = statement_lower.split('from')
                     if len(from_parts) > 1:
                         table_parts = from_parts[1].strip().split()
                         if table_parts:
-                            table = table_parts[0].strip()
-                            
-                            # Use select method for querying
-                            # This is limited and doesn't support complex queries
-                            result = self.select(table)
+                            table_name = table_parts[0].strip()
+                            # Use the select method instead of raw SQL
+                            result = self.select(table_name)
                             results.append(result)
+                        else:
+                            results.append({'error': 'Could not parse table name from SELECT statement'})
                     else:
-                        results.append({'error': 'Could not parse SELECT statement'})
-                except Exception as e:
-                    results.append({'error': str(e)})
-            else:
-                # For other queries (CREATE, INSERT, etc.), use a direct database connection
-                # This is not ideal but necessary since we can't use function calls
-                # These operations require elevated privileges
-                url = f"{self.url}/rest/v1/{statement.lower().split()[1] if len(statement.split()) > 1 else 'unknown'}"
-                headers = self.admin_headers.copy()
-                headers['Prefer'] = 'return=minimal'  # Don't return the response body
+                        results.append({'error': 'Invalid SELECT statement format'})
+                        
+                elif statement_lower.startswith('insert'):
+                    # Handle INSERT statements
+                    results.append({'message': 'INSERT operations should use the insert() method'})
+                    
+                elif statement_lower.startswith('update'):
+                    # Handle UPDATE statements
+                    results.append({'message': 'UPDATE operations should use the update() method'})
+                    
+                elif statement_lower.startswith('delete'):
+                    # Handle DELETE statements
+                    results.append({'message': 'DELETE operations should use the delete() method'})
+                    
+                elif statement_lower.startswith('create'):
+                    # Handle CREATE statements
+                    results.append({'message': 'CREATE operations should be performed through Supabase UI'})
+                    
+                else:
+                    # Handle other types of statements
+                    results.append({'message': f'Unsupported operation: {statement}'})
+                    
+            except Exception as e:
+                results.append({'error': str(e), 'statement': statement})
                 
-                # Try to execute the statement
-                try:
-                    if statement.lower().startswith('create'):
-                        # Handle CREATE TABLE statements differently
-                        # In real scenarios, use migrations in Supabase UI
-                        results.append({'info': 'CREATE statements should be executed manually in Supabase UI'})
-                    elif statement.lower().startswith('insert'):
-                        # Simplified INSERT handling
-                        # This won't work for complex inserts
-                        results.append({'info': 'INSERT statements should use the insert() method'})
-                    else:
-                        results.append({'info': 'Unsupported operation', 'statement': statement})
-                except Exception as e:
-                    results.append({'error': str(e), 'statement': statement})
-        
         return results
 
     def auth_signup(self, email, password, user_data=None):
