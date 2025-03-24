@@ -55,33 +55,34 @@
                         </div>
                     </div>
 
-                    <!-- Service Reviews -->
-                    <div class="service-reviews mt-5">
-                        <h3>Client Reviews</h3>
-                        {% if reviews %}
+                    <!-- Stylist Recommendation -->
+                    <div class="service-stylists-section mt-5">
+                        <h3>Recommended Stylists</h3>
+                        <p class="mb-4">Choose from our expert stylists who specialize in this service. Leave reviews directly on stylist profiles after your appointment.</p>
+                        
+                        {% if stylists %}
                             <div class="row">
-                                {% for review in reviews %}
-                                    {% if review.is_approved %}
-                                        <div class="col-md-6 mb-4">
-                                            <div class="review-card">
-                                                <div class="review-rating">
-                                                    {% for i in "12345" %}
-                                                        {% if forloop.counter <= review.rating %}
-                                                            <i class="fas fa-star"></i>
-                                                        {% else %}
-                                                            <i class="far fa-star"></i>
-                                                        {% endif %}
-                                                    {% endfor %}
-                                                </div>
-                                                <p class="review-text">{{ review.comment }}</p>
-                                                <div class="review-date">{{ review.created_at|date:"F d, Y" }}</div>
+                                {% for stylist in stylists %}
+                                    <div class="col-md-6 mb-4">
+                                        <div class="stylist-card">
+                                            <div class="stylist-card-image">
+                                                {% if stylist.profile_image %}
+                                                    <img src="{{ stylist.profile_image }}" alt="{{ stylist.name }}">
+                                                {% else %}
+                                                    <i class="fas fa-user-tie stylist-placeholder"></i>
+                                                {% endif %}
+                                            </div>
+                                            <div class="stylist-card-content">
+                                                <h4>{{ stylist.name }}</h4>
+                                                <p>{{ stylist.experience_years }} Years Experience</p>
+                                                <a href="{% url 'stylist_detail' stylist.id %}" class="btn btn-outline-gold btn-sm">View Profile & Reviews</a>
                                             </div>
                                         </div>
-                                    {% endif %}
+                                    </div>
                                 {% endfor %}
                             </div>
                         {% else %}
-                            <div class="alert alert-info">No reviews yet for this service.</div>
+                            <div class="alert alert-info">No stylists currently offer this service.</div>
                         {% endif %}
                     </div>
                 </div>

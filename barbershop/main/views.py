@@ -223,7 +223,7 @@ def stylists_view(request):
     return render(request, 'main/stylists.html', context)
 
 def stylist_detail_view(request, stylist_id):
-    """View for displaying details of a specific stylist."""
+    """View for displaying details of a specific stylist and handling review submissions."""
     stylist_data = get_stylist_details(stylist_id)
     
     if not stylist_data:
@@ -245,11 +245,44 @@ def stylist_detail_view(request, stylist_id):
     # Check if user is logged in
     user_data = request.session.get('user')
     
+    # Initialize review form
+    form = None
+    
+    # If user is logged in, show form for submitting a review
+    if user_data:
+        if request.method == 'POST':
+            form = ReviewForm(request.POST)
+            
+            if form.is_valid():
+                rating = form.cleaned_data['rating']
+                comment = form.cleaned_data['comment']
+                
+                # Create review data - just for the stylist (no service or appointment associated)
+                review_data = {
+                    'user_id': user_data['id'],
+                    'stylist_id': stylist_id,
+                    'rating': rating,
+                    'comment': comment,
+                    'is_approved': False  # Require admin approval
+                }
+                
+                # Insert review
+                result = supabase.insert('reviews', review_data)
+                
+                if 'error' in result:
+                    messages.error(request, f"Review submission failed: {result['error']}")
+                else:
+                    messages.success(request, "Thank you for your review! It will be visible after approval.")
+                    return redirect('stylist_detail', stylist_id=stylist_id)
+        else:
+            form = ReviewForm()
+    
     context = {
         'stylist': stylist_data,
         'reviews': reviews if reviews and 'error' not in reviews else [],
         'user': user_data,
-        'is_admin': is_admin(user_data)
+        'is_admin': is_admin(user_data),
+        'form': form
     }
     
     return render(request, 'main/stylist_detail.html', context)
@@ -265,23 +298,13 @@ def service_detail_view(request, service_id):
     # Format price
     service_data['formatted_price'] = format_price(service_data.get('price', 0))
     
-    # Get stylists who offer this service
-    stylist_services = supabase.select(
-        'stylist_services',
-        filter_column='service_id',
-        filter_value=service_id
+    # Get all active stylists since all stylists provide all services
+    stylists = supabase.select(
+        'stylists',
+        filter_column='is_active', 
+        filter_value='true',
+        order='name.asc'
     )
-    
-    stylists = []
-    if stylist_services and 'error' not in stylist_services:
-        for ss in stylist_services:
-            stylist = supabase.select(
-                'stylists',
-                filter_column='id',
-                filter_value=ss['stylist_id']
-            )
-            if stylist and 'error' not in stylist and len(stylist) > 0:
-                stylists.append(stylist[0])
     
     # Get reviews for this service
     reviews = supabase.select(
