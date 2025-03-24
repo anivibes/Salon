@@ -43,23 +43,39 @@ class SupabaseClient:
         headers = self.headers.copy()
         if range_from is not None and range_to is not None:
             headers['Range'] = f'{range_from}-{range_to}'
-            
+        
+        print(f"Selecting data from {table} at URL: {url}")
+        print(f"Select params: {params}")
+        
         response = requests.get(url, headers=headers, params=params)
+        
+        print(f"Select response status: {response.status_code}")
+        print(f"Select response content: {response.text}")
         
         if response.status_code >= 400:
             return {'error': response.text}
         
-        return response.json()
+        if response.text.strip():
+            return response.json()
+        else:
+            return []
 
     def insert(self, table, data):
         """Insert data into a table."""
         url = self._build_url(table)
+        print(f"Inserting data into {table} at URL: {url}")
         response = requests.post(url, headers=self.headers, data=json.dumps(data))
+        
+        print(f"Insert response status: {response.status_code}")
+        print(f"Insert response content: {response.text}")
         
         if response.status_code >= 400:
             return {'error': response.text}
         
-        return response.json()
+        if response.text.strip():
+            return response.json()
+        else:
+            return {'success': True, 'data': data}
 
     def update(self, table, id, data):
         """Update data in a table."""
