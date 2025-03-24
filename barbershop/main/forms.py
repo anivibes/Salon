@@ -68,7 +68,7 @@ class BookingForm(forms.Form):
         )
     )
     time = forms.ChoiceField(
-        choices=[],  # Will be populated dynamically
+        choices=[('', 'Select Time')],  # Default empty choice
         widget=forms.Select(attrs={'class': 'form-control'})
     )
     special_requests = forms.CharField(

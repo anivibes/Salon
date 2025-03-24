@@ -99,10 +99,16 @@ function initBookingForm() {
             timeLoading.classList.remove('d-none');
             noSlotsMessage.classList.add('d-none');
             
-            // Clear existing options except the first one
-            while (timeField.options.length > 1) {
-                timeField.remove(1);
+            // Clear existing options
+            while (timeField.options.length > 0) {
+                timeField.remove(0);
             }
+            
+            // Add default empty option
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Select Time';
+            timeField.appendChild(defaultOption);
             
             // Get CSRF token
             const csrfToken = document.querySelector('input[name="csrfmiddlewaretoken"]').value;
