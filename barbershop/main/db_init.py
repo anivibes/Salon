@@ -107,6 +107,22 @@ def initialize_database():
                 result = supabase.insert("users", admin_data)
                 if 'error' in result:
                     print(f"Error adding admin user: {result['error']}")
+                
+                # Add a regular test user as well
+                test_user_data = {
+                    "username": "testuser",
+                    "password": hash_password("password123"),  # Hashed password
+                    "email": "testuser@example.com",
+                    "phone_number": "+911234567890",
+                    "role": "user"
+                }
+                
+                print("Adding test user for demonstration...")
+                test_result = supabase.insert("users", test_user_data)
+                if 'error' in test_result:
+                    print(f"Error adding test user: {test_result['error']}")
+                else:
+                    print("Test user created successfully.")
         except Exception as e:
             print(f"Error checking admin users: {str(e)}")
             
