@@ -1,0 +1,85 @@
+-- 1. users
+create table users (
+  id bigserial primary key,
+  username text not null,
+  password text not null,
+  email text,
+  phone_number text not null,
+  role text default 'user' check (role in ('user', 'admin', 'stylist')),
+  created_at timestamptz default now()
+);
+
+-- 2. service_categories
+create table service_categories (
+  id bigserial primary key,
+  name text not null,
+  description text
+);
+
+-- 3. services
+create table services (
+  id bigserial primary key,
+  name text not null,
+  description text,
+  category_id int8 references service_categories(id) on delete cascade,
+  price numeric not null,
+  duration int4 not null,
+  is_active boolean default true
+);
+
+-- 4. stylists
+create table stylists (
+  id bigserial primary key,
+  name text not null,
+  bio text,
+  profile_image text,
+  experience_years int4,
+  is_active boolean default true,
+  user_id int8 references users(id) on delete set null
+);
+
+-- 5. stylist_services
+create table stylist_services (
+  id bigserial primary key,
+  stylist_id int8 references stylists(id) on delete cascade,
+  service_id int8 references services(id) on delete cascade,
+  unique (stylist_id, service_id)
+);
+
+-- 6. business_hours
+create table business_hours (
+  id bigserial primary key,
+  day_of_week int4 not null,
+  opening_time time not null,
+  closing_time time not null,
+  is_closed boolean default false,
+  unique (day_of_week)
+);
+
+-- 7. appointments
+create table appointments (
+  id uuid default gen_random_uuid() primary key,
+  user_id int8 references users(id) on delete cascade,
+  customer_name text not null,
+  customer_phone text not null,
+  service_id int8 references services(id) on delete cascade,
+  stylist_id int8 references stylists(id) on delete cascade,
+  date date not null,
+  time time not null,
+  status text default 'scheduled',
+  special_requests text,
+  created_at timestamptz default now()
+);
+
+-- 8. reviews
+create table reviews (
+  id bigserial primary key,
+  user_id int8 references users(id) on delete cascade,
+  service_id int8 references services(id) on delete cascade,
+  stylist_id int8 references stylists(id) on delete cascade,
+  appointment_id uuid references appointments(id) on delete cascade,
+  rating int2 not null check (rating between 1 and 5),
+  comment text,
+  is_approved boolean default false,
+  created_at timestamptz default now()
+);
