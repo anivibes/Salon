@@ -328,7 +328,22 @@ def booking_view(request):
     # Default to empty time slots list
     time_slots = []
     
+    # Get time slots from form data if available
+    selected_date = None
+    selected_stylist = None
+    selected_service = None
+    
     if request.method == 'POST':
+        # Get selected values from form data
+        selected_date = request.POST.get('date')
+        selected_stylist = request.POST.get('stylist')
+        selected_service = request.POST.get('service')
+        
+        # Get time slots if all required values are present
+        if selected_date and selected_stylist and selected_service:
+            time_slots = get_available_time_slots(selected_date, selected_stylist, selected_service)
+            print(f"Available time slots: {time_slots}")
+            
         form = BookingForm(request.POST, services=services, stylists=stylists, time_slots=time_slots)
         
         if form.is_valid():
@@ -402,12 +417,18 @@ def get_time_slots(request):
             if not date_str or not stylist_id or not service_id:
                 return JsonResponse({'error': 'Missing required parameters'}, status=400)
             
+            # Get time slots
             time_slots = get_available_time_slots(date_str, stylist_id, service_id)
+            
+            # Log for debugging
+            print(f"Available time slots for date={date_str}, stylist={stylist_id}, service={service_id}: {time_slots}")
+            
             return JsonResponse({'time_slots': time_slots})
         
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON'}, status=400)
         except Exception as e:
+            print(f"Error getting time slots: {str(e)}")
             return JsonResponse({'error': str(e)}, status=500)
     
     return JsonResponse({'error': 'Method not allowed'}, status=405)

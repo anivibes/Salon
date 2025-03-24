@@ -67,7 +67,8 @@ def get_available_time_slots(date_str, stylist_id, service_id):
     end_time = datetime.combine(booking_date, closing_time)
     
     while current_time + timedelta(minutes=duration_minutes) <= end_time:
-        time_slots.append(current_time.time().strftime('%H:%M'))
+        time_slot = current_time.time().strftime('%H:%M')
+        time_slots.append(time_slot)
         current_time += timedelta(minutes=30)
     
     # Get existing appointments for the day and stylist
