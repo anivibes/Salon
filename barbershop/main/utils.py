@@ -20,25 +20,36 @@ def get_available_time_slots(date_str, stylist_id, service_id):
     except ValueError:
         return []
     
+    # By default, use standard hours from 9 AM to 8 PM for all days
+    default_opening_time = time(9, 0)  # 9:00 AM
+    default_closing_time = time(20, 0) # 8:00 PM
+    
     # Get day of week (0 = Monday, 6 = Sunday)
     day_of_week = booking_date.weekday()
     
-    # Get business hours for the given day
+    # Check for custom hours in the database
     business_hours = supabase.select(
         'business_hours',
         filter_column='day_of_week',
         filter_value=day_of_week
     )
     
-    if not business_hours or 'error' in business_hours or business_hours[0].get('is_closed', False):
-        return []
-    
-    # Get opening and closing times
-    try:
-        opening_time = datetime.strptime(business_hours[0]['opening_time'], '%H:%M:%S').time()
-        closing_time = datetime.strptime(business_hours[0]['closing_time'], '%H:%M:%S').time()
-    except (KeyError, ValueError, IndexError):
-        return []
+    # If there are custom hours, use them
+    if business_hours and 'error' not in business_hours and len(business_hours) > 0:
+        if business_hours[0].get('is_closed', False):
+            return []  # Closed on this day
+        
+        try:
+            opening_time = datetime.strptime(business_hours[0]['opening_time'], '%H:%M:%S').time()
+            closing_time = datetime.strptime(business_hours[0]['closing_time'], '%H:%M:%S').time()
+        except (KeyError, ValueError, IndexError):
+            # Fall back to defaults if there's an error
+            opening_time = default_opening_time
+            closing_time = default_closing_time
+    else:
+        # If no business hours entry, use default hours
+        opening_time = default_opening_time
+        closing_time = default_closing_time
     
     # Get service duration
     service = supabase.select('services', columns='duration', filter_column='id', filter_value=service_id)

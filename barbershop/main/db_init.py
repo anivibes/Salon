@@ -60,18 +60,12 @@ def initialize_database():
             if not hours or len(hours) == 0:
                 print("Adding default business hours...")
                 for day in range(7):  # 0 = Monday, 6 = Sunday
-                    is_weekend = day >= 5  # Saturday and Sunday
+                    # All days have same hours: 9 AM to 8 PM (per user request)
+                    opening_time = "09:00:00"
+                    closing_time = "20:00:00"
                     
-                    # Default hours
-                    if is_weekend:
-                        opening_time = "10:00:00"
-                        closing_time = "18:00:00"
-                    else:
-                        opening_time = "09:00:00"
-                        closing_time = "20:00:00"
-                    
-                    # Sunday is closed (day 6)
-                    is_closed = day == 6
+                    # No days are closed (all days available)
+                    is_closed = False
                     
                     # Insert business hours
                     hours_data = {
