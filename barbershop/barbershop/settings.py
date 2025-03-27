@@ -1,6 +1,15 @@
 import os
 from pathlib import Path
 
+# Import dotenv for environment variables
+try:
+    from dotenv import load_dotenv
+    # Load environment variables from .env file
+    load_dotenv()
+except ImportError:
+    # dotenv is not installed, environment variables should be set manually
+    pass
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
