@@ -25,44 +25,55 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'services' %}">Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'stylists' %}">Stylists</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'booking' %}">Book Now</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'reviews' %}">Reviews</a>
-                    </li>
-                    {% if user %}
-                        {% if is_admin %}
-                            <li class="nav-item">
-                                <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
-                            </li>
-                        {% endif %}
+                    {% if user and user.role == 'admin' %}
+                        <!-- Show only Dashboard link for admin users -->
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a>
+                        </li>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {{ user.username }}
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
                             </ul>
                         </li>
                     {% else %}
+                        <!-- Regular navigation for non-admin users -->
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            <a class="nav-link" href="{% url 'home' %}">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                            <a class="nav-link" href="{% url 'services' %}">Services</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'stylists' %}">Stylists</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'booking' %}">Book Now</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'reviews' %}">Reviews</a>
+                        </li>
+                        {% if user %}
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    {{ user.username }}
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <li><a class="dropdown-item" href="{% url 'profile' %}">My Profile</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                                </ul>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'login' %}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="{% url 'signup' %}">Sign Up</a>
+                            </li>
+                        {% endif %}
                     {% endif %}
                 </ul>
             </div>
