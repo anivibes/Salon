@@ -156,6 +156,10 @@
                                                                 data-active="{{ service.is_active|yesno:'true,false' }}">
                                                             Edit
                                                         </button>
+                                                        <a href="{% url 'delete_service' service.id %}" class="btn btn-sm btn-outline-danger delete-btn" 
+                                                          onclick="return confirmDelete('Are you sure you want to delete {{ service.name }}?')">
+                                                            Delete
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             {% endfor %}

@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib import messages
 from django.utils.html import escape
 import json
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 from .supabase import supabase
 from .forms import (
@@ -693,6 +693,25 @@ def profile_view(request):
     
     return render(request, 'main/profile.html', context)
 
+# Function to clean up old appointments
+def cleanup_old_appointments():
+    """Delete appointments that are more than one day old."""
+    yesterday = (date.today() - timedelta(days=1)).isoformat()
+    
+    # Get old appointments (scheduled date before yesterday)
+    old_appointments = supabase.select(
+        'appointments',
+        filter_column='date',
+        filter_value=f'lt.{yesterday}'
+    )
+    
+    if old_appointments and 'error' not in old_appointments:
+        for appointment in old_appointments:
+            # Delete the appointment
+            supabase.delete('appointments', appointment['id'])
+            
+    return len(old_appointments) if old_appointments and 'error' not in old_appointments else 0
+
 def dashboard_view(request):
     """Main admin dashboard view."""
     # Check if user is logged in and is admin
@@ -701,6 +720,11 @@ def dashboard_view(request):
     if not user_data or not is_admin(user_data):
         messages.error(request, "You don't have permission to access the admin dashboard.")
         return redirect('home')
+        
+    # Cleanup old appointments
+    deleted_appointments = cleanup_old_appointments()
+    if deleted_appointments > 0:
+        messages.info(request, f"System automatically removed {deleted_appointments} old appointments.")
     
     # Get counts for dashboard
     appointment_count = 0
@@ -1057,6 +1081,55 @@ def dashboard_stylists_view(request):
     }
     
     return render(request, 'main/dashboard_stylists.html', context)
+
+def delete_service_view(request, service_id):
+    """Admin view for deleting a service."""
+    # Check if user is logged in and is admin
+    user_data = request.session.get('user')
+    
+    if not user_data or not is_admin(user_data):
+        messages.error(request, "You don't have permission to access the admin dashboard.")
+        return redirect('home')
+    
+    # Delete the service
+    result = supabase.delete('services', service_id)
+    
+    if 'error' in result:
+        messages.error(request, f"Failed to delete service: {result['error']}")
+    else:
+        messages.success(request, "Service deleted successfully.")
+    
+    return redirect('dashboard_services')
+
+def delete_stylist_view(request, stylist_id):
+    """Admin view for deleting a stylist."""
+    # Check if user is logged in and is admin
+    user_data = request.session.get('user')
+    
+    if not user_data or not is_admin(user_data):
+        messages.error(request, "You don't have permission to access the admin dashboard.")
+        return redirect('home')
+    
+    # First, delete any stylist_services entries for this stylist
+    stylist_services = supabase.select(
+        'stylist_services',
+        filter_column='stylist_id',
+        filter_value=stylist_id
+    )
+    
+    if stylist_services and 'error' not in stylist_services:
+        for ss in stylist_services:
+            supabase.delete('stylist_services', ss['id'])
+    
+    # Now delete the stylist
+    result = supabase.delete('stylists', stylist_id)
+    
+    if 'error' in result:
+        messages.error(request, f"Failed to delete stylist: {result['error']}")
+    else:
+        messages.success(request, "Stylist deleted successfully.")
+    
+    return redirect('dashboard_stylists')
 
 def dashboard_reviews_view(request):
     """Admin view for managing reviews."""

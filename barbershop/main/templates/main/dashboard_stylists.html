@@ -182,6 +182,10 @@
                                                     <a href="{% url 'stylist_detail' stylist.id %}" class="btn btn-sm btn-outline-secondary" target="_blank">
                                                         View Profile
                                                     </a>
+                                                    <a href="{% url 'delete_stylist' stylist.id %}" class="btn btn-sm btn-outline-danger"
+                                                       onclick="return confirmDelete('Are you sure you want to delete {{ stylist.name }}?')">
+                                                        Delete
+                                                    </a>
                                                 </div>
                                             </div>
                                         </div>

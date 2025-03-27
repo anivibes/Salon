@@ -25,4 +25,8 @@ urlpatterns = [
     path('dashboard/services/', views.dashboard_services_view, name='dashboard_services'),
     path('dashboard/stylists/', views.dashboard_stylists_view, name='dashboard_stylists'),
     path('dashboard/reviews/', views.dashboard_reviews_view, name='dashboard_reviews'),
+    
+    # Admin delete operations
+    path('dashboard/services/delete/<int:service_id>/', views.delete_service_view, name='delete_service'),
+    path('dashboard/stylists/delete/<int:stylist_id>/', views.delete_stylist_view, name='delete_stylist'),
 ]
