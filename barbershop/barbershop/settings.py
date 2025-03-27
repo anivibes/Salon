@@ -14,15 +14,17 @@ except ImportError:
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q&kzhu^6j5%n#ioc!2nh+9z4!yj-0kbxf+0!0c9_3qt-v3p=j&'
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-q&kzhu^6j5%n#ioc!2nh+9z4!yj-0kbxf+0!0c9_3qt-v3p=j&')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('true', 'yes', '1', 'y')
 
-ALLOWED_HOSTS = ['*']
+# Parse comma-separated list of allowed hosts from environment
+ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
 
-# CSRF settings
-CSRF_TRUSTED_ORIGINS = ['https://*.replit.dev', 'https://*.replit.app']
+# CSRF settings - parse comma-separated list of trusted origins
+CSRF_TRUSTED_ORIGINS = os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', 
+                                 'https://*.replit.dev,https://*.replit.app').split(',')
 
 # Application definition
 INSTALLED_APPS = [
@@ -43,6 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'main.middleware.AdminMiddleware',  # Our custom middleware for admin redirection
 ]
 
 ROOT_URLCONF = 'barbershop.urls'
