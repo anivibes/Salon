@@ -20,11 +20,16 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-q&kzhu^6j5%n#ioc!2n
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('true', 'yes', '1', 'y')
 
 # Parse comma-separated list of allowed hosts from environment
-ALLOWED_HOSTS = os.getenv('DJANGO_ALLOWED_HOSTS', '*').split(',')
+# Ensure Replit-specific domains are included
+ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '.replit.app', '.replit.dev', 
+                 'aa595309-1dc9-46d1-bba2-ddc6b916a4b0-00-3n7f2o282walg.picard.replit.dev']
 
-# CSRF settings - parse comma-separated list of trusted origins
-CSRF_TRUSTED_ORIGINS = os.getenv('DJANGO_CSRF_TRUSTED_ORIGINS', 
-                                 'https://*.replit.dev,https://*.replit.app').split(',')
+# CSRF settings - Ensure Replit domains are trusted
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.replit.dev',
+    'https://*.replit.app', 
+    'https://aa595309-1dc9-46d1-bba2-ddc6b916a4b0-00-3n7f2o282walg.picard.replit.dev'
+]
 
 # Application definition
 INSTALLED_APPS = [
