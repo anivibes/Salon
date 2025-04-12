@@ -27,10 +27,10 @@
                 </div>
                 <div class="col-md-6">
                     <div class="section-title mb-4">
-                        <h2>About <span class="gold-text">Royal Cuts</span></h2>
+                        <h2>About <span class="gold-text">Trendz Hair Salon</span></h2>
                     </div>
-                    <p class="mb-4">Founded in 2010, Royal Cuts has established itself as the premier destination for men's grooming in India. Our barbers combine traditional Indian techniques with modern styling to create looks that are both timeless and trendy.</p>
-                    <p class="mb-4">At Royal Cuts, we believe that every man deserves the royal treatment. Our premium services are designed to pamper you while delivering exceptional results. From classic haircuts to luxury shaves and beard styling, we offer a comprehensive range of services to meet all your grooming needs.</p>
+                    <p class="mb-4">Founded in 2015, Trendz Hair Salon has established itself as the premier destination for hair styling in Punjab. Our stylists combine traditional techniques with modern styling to create looks that are both elegant and contemporary.</p>
+                    <p class="mb-4">At Trendz, we believe that everyone deserves top-quality hair care. Our premium services are designed to pamper you while delivering exceptional results. From stylish haircuts to luxury treatments and coloring, we offer a comprehensive range of services to meet all your styling needs.</p>
                     <div class="achievements row text-center">
                         <div class="col-4">
                             <h3 class="achievement-number">10+</h3>
@@ -55,7 +55,7 @@
         <div class="container">
             <div class="section-title text-center mb-5">
                 <h2>Our Premium <span class="gold-text">Services</span></h2>
-                <p class="lead">Experience the finest grooming services tailored for the modern Indian gentleman</p>
+                <p class="lead">Experience the finest hair styling services for all ages and styles</p>
             </div>
             <div class="row">
                 {% if services %}
@@ -89,7 +89,7 @@
         <div class="container">
             <div class="section-title text-center mb-5">
                 <h2>Our Expert <span class="gold-text">Stylists</span></h2>
-                <p class="lead">Meet our team of highly skilled and experienced barbers</p>
+                <p class="lead">Meet our team of highly skilled and experienced hair stylists</p>
             </div>
             <div class="row">
                 {% if stylists %}
@@ -105,7 +105,7 @@
                                 </div>
                                 <div class="stylist-info">
                                     <h3>{{ stylist.name }}</h3>
-                                    <p class="stylist-title">Master Barber</p>
+                                    <p class="stylist-title">Hair Stylist</p>
                                     <p class="experience">{{ stylist.experience_years }} Years Experience</p>
                                     <a href="{% url 'stylist_detail' stylist.id %}" class="btn btn-outline-gold btn-sm">View Profile</a>
                                 </div>
@@ -173,8 +173,8 @@
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8 mb-4 mb-lg-0">
-                    <h2>Ready for the <span class="gold-text">Royal Treatment?</span></h2>
-                    <p class="lead mb-0">Book your appointment today and experience premium grooming services.</p>
+                    <h2>Ready for a <span class="gold-text">Stunning Look?</span></h2>
+                    <p class="lead mb-0">Book your appointment today and experience premium hair styling services.</p>
                 </div>
                 <div class="col-lg-4 text-lg-end">
                     <a href="{% url 'booking' %}" class="btn btn-gold btn-lg">Book Now</a>
