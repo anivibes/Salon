@@ -83,16 +83,28 @@ class SupabaseClient:
         params = {'id': f'eq.{id}'}
         response = requests.patch(url, headers=self.headers, params=params, data=json.dumps(data))
         
+        print(f"Update response status: {response.status_code}")
+        print(f"Update response content: {response.text}")
+        
         if response.status_code >= 400:
             return {'error': response.text}
         
-        return response.json()
+        if response.text.strip():
+            try:
+                return response.json()
+            except json.JSONDecodeError:
+                return {'success': True, 'data': data}
+        else:
+            return {'success': True, 'data': data}
 
     def delete(self, table, id):
         """Delete data from a table."""
         url = self._build_url(table)
         params = {'id': f'eq.{id}'}
         response = requests.delete(url, headers=self.headers, params=params)
+        
+        print(f"Delete response status: {response.status_code}")
+        print(f"Delete response content: {response.text}")
         
         if response.status_code >= 400:
             return {'error': response.text}
