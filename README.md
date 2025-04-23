@@ -1,10 +1,10 @@
-# Royal Cuts Premium Indian Barber Shop
+# Sam Unisex Salon
 
-A full-featured barbershop management system with booking functionality, service management, stylist profiles, and admin dashboard built with Django and Supabase.
+A full-featured hair salon management system with booking functionality, service management, stylist profiles, and admin dashboard built with Django and Supabase.
 
 ## Project Overview
 
-Royal Cuts is a comprehensive web application for a premium Indian barber shop that allows users to:
+Sam Unisex Salon is a comprehensive web application for a premium hair salon that allows users to:
 - Browse services and stylists
 - Book appointments based on real-time availability
 - Leave reviews for stylists
