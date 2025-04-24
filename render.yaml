@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: sam-salon
+    env: python
+    buildCommand: pip install -r barbershop/requirements.txt
+    startCommand: cd barbershop && gunicorn barbershop.wsgi:application
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: false
+      - key: DJANGO_ALLOWED_HOSTS
+        value: .onrender.com
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+      - key: SUPABASE_SECRET_KEY
+        sync: false

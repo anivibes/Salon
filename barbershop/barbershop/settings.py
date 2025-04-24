@@ -20,14 +20,15 @@ SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-q&kzhu^6j5%n#ioc!2n
 DEBUG = os.getenv('DJANGO_DEBUG', 'True').lower() in ('true', 'yes', '1', 'y')
 
 # Parse comma-separated list of allowed hosts from environment
-# Ensure Replit-specific domains are included
+# Ensure Replit and Render domains are included
 ALLOWED_HOSTS = ['*', 'localhost', '127.0.0.1', '.replit.app', '.replit.dev', 
-                 'aa595309-1dc9-46d1-bba2-ddc6b916a4b0-00-3n7f2o282walg.picard.replit.dev']
+                 '.onrender.com', 'aa595309-1dc9-46d1-bba2-ddc6b916a4b0-00-3n7f2o282walg.picard.replit.dev']
 
-# CSRF settings - Ensure Replit domains are trusted
+# CSRF settings - Ensure Replit and Render domains are trusted
 CSRF_TRUSTED_ORIGINS = [
     'https://*.replit.dev',
-    'https://*.replit.app', 
+    'https://*.replit.app',
+    'https://*.onrender.com',
     'https://aa595309-1dc9-46d1-bba2-ddc6b916a4b0-00-3n7f2o282walg.picard.replit.dev'
 ]
 
@@ -44,6 +45,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Add WhiteNoise for static files
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -111,9 +113,11 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'main/static'),
 ]
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
